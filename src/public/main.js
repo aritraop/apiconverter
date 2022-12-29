@@ -20,13 +20,14 @@ function prettyPrint() {
 async function handleSubmit() {
   document.querySelector('.loader').style.display = "block"
   var ugly = document.querySelector('.drop-box').value;
+  const prepend = document.querySelector('.prepend').value
   const response = await fetch('/convert', {
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
     method: 'POST',
-    body: JSON.stringify({ data: ugly })
+    body: JSON.stringify({ data: ugly, prepend })
   })
   const json = await response.json()
   if (json.message) {

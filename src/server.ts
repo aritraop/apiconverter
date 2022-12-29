@@ -17,7 +17,8 @@ app.post('/convert', async (req: Request, res: Response, _next: NextFunction) =>
   let formatted
   try {
     const data: { paths: API_OBJECT } = await JSON.parse(req.body.data)
-    formatted = format(data['paths'])
+    console.log('prepend', req.body.prepend)
+    formatted = format(data['paths'], req.body.prepend ? req.body.prepend : undefined)
   } catch (error) {
     return res.status(422).json({ message: 'can\'t convert', error: (error as Error).message })
   }

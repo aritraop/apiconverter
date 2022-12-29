@@ -11,7 +11,6 @@ export type API_OBJECT = {
   } & { parameters?: { in: string }[], security?: string[] }
 }
 // ! change this. mostly used patter /<app-slug>/<version>/<service-name>
-const PREPEND = '/hr/v1'
 function slugify(method: string, prepend: string, path: string) {
   return `${method}${prepend.replace(/\//g, '-')}${path.replace(/\//g, '-')}`.replace(/[\])}[{(]/g, '')
 }
@@ -21,7 +20,7 @@ function formatParam(param: { schema: { type: string, example: string }, name: s
     return { ...rest, required: true, type: schema ? schema.type : 'string' }
   return { ...rest, schema, required: rest.required || false, type: schema ? schema.type : 'string' }
 }
-export function format(ApiObject: API_OBJECT) {
+export function format(ApiObject: API_OBJECT, prepend: string = '/hr/v1') {
   console.log(ApiObject)
   const formattedObject: any = {}
   Object.keys(ApiObject).forEach(key => {
@@ -32,7 +31,7 @@ export function format(ApiObject: API_OBJECT) {
       if (keys.includes(path)) {
         pathObject[path] = {
           description: pathObject[path]?.description || "",
-          operationId: slugify(path, PREPEND, key),
+          operationId: slugify(path, prepend, key),
           security: ((pathObject.security && pathObject.security.length) || (pathObject[path]?.security && pathObject[path]?.security.length)) ? [{ api_key: [] }, { pypa_auth: [] }] : [{ api_key: [] }],
           // @ts-ignore
           responses: { [Object.keys(pathObject[path]?.responses)[0]]: { description: Object.values(pathObject[path]?.responses)[0].description } },
@@ -49,7 +48,7 @@ export function format(ApiObject: API_OBJECT) {
         }
       }
     }
-    formattedObject[`${PREPEND + key}`] = pathObject
+    formattedObject[`${prepend + key}`] = pathObject
   })
   return formattedObject
 }
